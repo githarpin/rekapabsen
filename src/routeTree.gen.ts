@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DosenRouteImport } from './routes/dosen'
+import { Route as KelasRouteImport } from './routes/kelas'
+import { Route as MataKuliahRouteImport } from './routes/mata-kuliah'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DosenRoute = DosenRouteImport.update({
+  id: '/dosen',
+  path: '/dosen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KelasRoute = KelasRouteImport.update({
+  id: '/kelas',
+  path: '/kelas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MataKuliahRoute = MataKuliahRouteImport.update({
+  id: '/mata-kuliah',
+  path: '/mata-kuliah',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dosen': typeof DosenRoute
+  '/kelas': typeof KelasRoute
+  '/mata-kuliah': typeof MataKuliahRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dosen': typeof DosenRoute
+  '/kelas': typeof KelasRoute
+  '/mata-kuliah': typeof MataKuliahRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dosen': typeof DosenRoute
+  '/kelas': typeof KelasRoute
+  '/mata-kuliah': typeof MataKuliahRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/dosen' | '/kelas' | '/mata-kuliah'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/dosen' | '/kelas' | '/mata-kuliah'
+  id: '__root__' | '/' | '/dosen' | '/kelas' | '/mata-kuliah'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DosenRoute: typeof DosenRoute
+  KelasRoute: typeof KelasRoute
+  MataKuliahRoute: typeof MataKuliahRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dosen': {
+      id: '/dosen'
+      path: '/dosen'
+      fullPath: '/dosen'
+      preLoaderRoute: typeof DosenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kelas': {
+      id: '/kelas'
+      path: '/kelas'
+      fullPath: '/kelas'
+      preLoaderRoute: typeof KelasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mata-kuliah': {
+      id: '/mata-kuliah'
+      path: '/mata-kuliah'
+      fullPath: '/mata-kuliah'
+      preLoaderRoute: typeof MataKuliahRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DosenRoute: DosenRoute,
+  KelasRoute: KelasRoute,
+  MataKuliahRoute: MataKuliahRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
