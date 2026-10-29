@@ -1,24 +1,121 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { BookOpen, ClipboardList, PenLine, Printer, School, Users } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { PageShell } from "@/components/page-shell";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAppData } from "@/lib/store";
+import { namaBulan } from "@/lib/types";
+
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Dashboard — Sistem Rekap Mengajar" },
+      {
+        name: "description",
+        content:
+          "Ringkasan data dosen, mata kuliah, kelas, dan pertemuan mengajar Fakultas Vokasi Institut Az Zuhra.",
+      },
+      { property: "og:title", content: "Dashboard — Sistem Rekap Mengajar" },
+      {
+        property: "og:description",
+        content: "Ringkasan data mengajar dosen Fakultas Vokasi Institut Az Zuhra.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: DashboardPage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function StatCard({ label, nilai, icon: Icon, to }: { label: string; nilai: number; icon: LucideIcon; to: string }) {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
+    <Link to={to} className="block">
+      <Card className="h-full transition-colors hover:bg-accent/60">
+        <CardContent className="flex items-center gap-4 p-5">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Icon className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="text-2xl font-bold text-foreground">{nilai}</p>
+            <p className="text-sm text-muted-foreground">{label}</p>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
+
+function DashboardPage() {
+  const { data } = useAppData();
+
+  const sekarang = new Date();
+  const kunciBulanIni = `${sekarang.getFullYear()}-${String(sekarang.getMonth() + 1).padStart(2, "0")}`;
+  const totalSksBulanIni = data.pertemuan
+    .filter((p) => p.tanggal.startsWith(kunciBulanIni))
+    .reduce((total, p) => total + p.sks, 0);
+
+  const statistik = [
+    { label: "Dosen", nilai: data.dosen.length, icon: Users, to: "/dosen" },
+    { label: "Mata Kuliah", nilai: data.mataKuliah.length, icon: BookOpen, to: "/mata-kuliah" },
+    { label: "Kelas", nilai: data.kelas.length, icon: School, to: "/kelas" },
+    { label: "Pertemuan", nilai: data.pertemuan.length, icon: ClipboardList, to: "/input-mengajar" },
+  ];
+
+  return (
+    <PageShell
+      title="Dashboard"
+      description="Sistem Rekap Mengajar Dosen Fakultas Vokasi Institut Az Zuhra"
     >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {statistik.map((item) => (
+          <StatCard key={item.to} {...item} />
+        ))}
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              Total SKS bulan {namaBulan(sekarang.getMonth() + 1)} {sekarang.getFullYear()}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-primary">{totalSksBulanIni}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              SKS pertemuan yang tercatat bulan ini.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Menu Cepat</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            <Button asChild>
+              <Link to="/input-mengajar">
+                <PenLine className="h-4 w-4" /> Input Mengajar
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/rekap">
+                <Printer className="h-4 w-4" /> Rekap Mengajar
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="mt-6">
+        <CardContent className="p-5 text-sm leading-relaxed text-muted-foreground">
+          <span className="font-medium text-foreground">Catatan penyimpanan:</span> saat ini data
+          aplikasi tersimpan di browser perangkat ini dan belum terhubung ke basis data server,
+          sehingga belum tersimpan secara permanen dan hanya tersedia di perangkat yang sama.
+          Integrasi backend akan ditambahkan pada tahap berikutnya.
+        </CardContent>
+      </Card>
+    </PageShell>
   );
 }
