@@ -153,7 +153,7 @@ function DataMataKuliahPage() {
                 <div className="space-y-1.5">
                   <Label>Program Studi</Label>
                   <Select
-                    value={prodi || undefined}
+                    value={prodi}
                     onValueChange={(nilai) => setProdi(nilai as Prodi)}
                   >
                     <SelectTrigger className="w-full">

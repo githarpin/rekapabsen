@@ -35,8 +35,8 @@ describe("susunRekap", () => {
   it("menyaring rekap berdasarkan bulan dan dosen", () => {
     const hasil = susunRekap(data, { ...filterSemua, bulan: 10, dosenId: "d1" });
     expect(hasil.map((b) => b.pertemuan.id)).toEqual(["p1", "p2"]);
-    expect(hasil[0].kelas).toBe("MI-1A");
-    expect(hasil[0].mataKuliah).toBe("Pemrograman Web");
+    expect(hasil[0]?.kelas).toBe("MI-1A");
+    expect(hasil[0]?.mataKuliah).toBe("Pemrograman Web");
   });
 
   it("menyaring rekap berdasarkan program studi", () => {

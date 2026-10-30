@@ -135,7 +135,7 @@ function InputMengajarPage() {
                   terlebih dahulu.
                 </p>
               ) : (
-                <Select value={dosenId || undefined} onValueChange={setDosenId}>
+                <Select value={dosenId} onValueChange={setDosenId}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Pilih dosen" />
                   </SelectTrigger>
@@ -153,7 +153,7 @@ function InputMengajarPage() {
             <div className="space-y-1.5">
               <Label>Program Studi</Label>
               <Select
-                value={prodi || undefined}
+                value={prodi}
                 onValueChange={(nilai) => {
                   setProdi(nilai as Prodi);
                   setKelasId("");
@@ -186,7 +186,7 @@ function InputMengajarPage() {
                   .
                 </p>
               ) : (
-                <Select value={kelasId || undefined} onValueChange={setKelasId}>
+                <Select value={kelasId} onValueChange={setKelasId}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Pilih kelas" />
                   </SelectTrigger>
@@ -215,7 +215,7 @@ function InputMengajarPage() {
                 </p>
               ) : (
                 <Select
-                  value={mataKuliahId || undefined}
+                  value={mataKuliahId}
                   onValueChange={pilihMataKuliah}
                 >
                   <SelectTrigger className="w-full">
