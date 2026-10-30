@@ -14,7 +14,7 @@ import { AppMobileBar, AppSidebar } from "@/components/app-nav";
 import { DataProvider } from "@/lib/store";
 
 import appCss from "../styles.css?url";
-import { reportLovableErrorReportingShim } from "../lib/lovable-error-reporting";
+import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
   return (
@@ -42,7 +42,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    reportLovableErrorReportingShim(error, { boundary: "tanstack_root_error_component" });
+    reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (

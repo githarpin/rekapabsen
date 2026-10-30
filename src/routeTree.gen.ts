@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DosenRouteImport } from './routes/dosen'
+import { Route as InputMengajarRouteImport } from './routes/input-mengajar'
 import { Route as KelasRouteImport } from './routes/kelas'
 import { Route as MataKuliahRouteImport } from './routes/mata-kuliah'
+import { Route as RekapRouteImport } from './routes/rekap'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const DosenRoute = DosenRouteImport.update({
   id: '/dosen',
   path: '/dosen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InputMengajarRoute = InputMengajarRouteImport.update({
+  id: '/input-mengajar',
+  path: '/input-mengajar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KelasRoute = KelasRouteImport.update({
@@ -34,39 +41,60 @@ const MataKuliahRoute = MataKuliahRouteImport.update({
   path: '/mata-kuliah',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RekapRoute = RekapRouteImport.update({
+  id: '/rekap',
+  path: '/rekap',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dosen': typeof DosenRoute
+  '/input-mengajar': typeof InputMengajarRoute
   '/kelas': typeof KelasRoute
   '/mata-kuliah': typeof MataKuliahRoute
+  '/rekap': typeof RekapRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dosen': typeof DosenRoute
+  '/input-mengajar': typeof InputMengajarRoute
   '/kelas': typeof KelasRoute
   '/mata-kuliah': typeof MataKuliahRoute
+  '/rekap': typeof RekapRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dosen': typeof DosenRoute
+  '/input-mengajar': typeof InputMengajarRoute
   '/kelas': typeof KelasRoute
   '/mata-kuliah': typeof MataKuliahRoute
+  '/rekap': typeof RekapRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dosen' | '/kelas' | '/mata-kuliah'
+  fullPaths:
+    '/' | '/dosen' | '/input-mengajar' | '/kelas' | '/mata-kuliah' | '/rekap'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dosen' | '/kelas' | '/mata-kuliah'
-  id: '__root__' | '/' | '/dosen' | '/kelas' | '/mata-kuliah'
+  to: '/' | '/dosen' | '/input-mengajar' | '/kelas' | '/mata-kuliah' | '/rekap'
+  id:
+    | '__root__'
+    | '/'
+    | '/dosen'
+    | '/input-mengajar'
+    | '/kelas'
+    | '/mata-kuliah'
+    | '/rekap'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DosenRoute: typeof DosenRoute
+  InputMengajarRoute: typeof InputMengajarRoute
   KelasRoute: typeof KelasRoute
   MataKuliahRoute: typeof MataKuliahRoute
+  RekapRoute: typeof RekapRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -85,6 +113,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DosenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/input-mengajar': {
+      id: '/input-mengajar'
+      path: '/input-mengajar'
+      fullPath: '/input-mengajar'
+      preLoaderRoute: typeof InputMengajarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/kelas': {
       id: '/kelas'
       path: '/kelas'
@@ -99,14 +134,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MataKuliahRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rekap': {
+      id: '/rekap'
+      path: '/rekap'
+      fullPath: '/rekap'
+      preLoaderRoute: typeof RekapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DosenRoute: DosenRoute,
+  InputMengajarRoute: InputMengajarRoute,
   KelasRoute: KelasRoute,
   MataKuliahRoute: MataKuliahRoute,
+  RekapRoute: RekapRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
