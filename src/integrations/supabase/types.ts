@@ -14,7 +14,136 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      dosen: {
+        Row: {
+          created_at: string
+          id: string
+          nama: string
+          nidn: string
+          prodi: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nama: string
+          nidn?: string
+          prodi: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nama?: string
+          nidn?: string
+          prodi?: string
+        }
+        Relationships: []
+      }
+      kelas: {
+        Row: {
+          created_at: string
+          id: string
+          nama: string
+          prodi: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nama: string
+          prodi: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nama?: string
+          prodi?: string
+        }
+        Relationships: []
+      }
+      mata_kuliah: {
+        Row: {
+          created_at: string
+          id: string
+          kode: string
+          nama: string
+          prodi: string
+          sks: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kode?: string
+          nama: string
+          prodi: string
+          sks?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kode?: string
+          nama?: string
+          prodi?: string
+          sks?: number
+        }
+        Relationships: []
+      }
+      pertemuan: {
+        Row: {
+          created_at: string
+          dosen_id: string
+          id: string
+          kelas_id: string
+          mata_kuliah_id: string
+          metode: string
+          prodi: string
+          sks: number
+          tanggal: string
+        }
+        Insert: {
+          created_at?: string
+          dosen_id: string
+          id?: string
+          kelas_id: string
+          mata_kuliah_id: string
+          metode?: string
+          prodi: string
+          sks?: number
+          tanggal: string
+        }
+        Update: {
+          created_at?: string
+          dosen_id?: string
+          id?: string
+          kelas_id?: string
+          mata_kuliah_id?: string
+          metode?: string
+          prodi?: string
+          sks?: number
+          tanggal?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pertemuan_dosen_id_fkey"
+            columns: ["dosen_id"]
+            isOneToOne: false
+            referencedRelation: "dosen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pertemuan_kelas_id_fkey"
+            columns: ["kelas_id"]
+            isOneToOne: false
+            referencedRelation: "kelas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pertemuan_mata_kuliah_id_fkey"
+            columns: ["mata_kuliah_id"]
+            isOneToOne: false
+            referencedRelation: "mata_kuliah"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
