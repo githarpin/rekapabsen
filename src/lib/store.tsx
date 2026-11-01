@@ -7,8 +7,18 @@ import {
 } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
-import type { AppData, Koleksi } from "./types";
+import type {
+  AppData,
+  Dosen,
+  Kelas,
+  Koleksi,
+  MataKuliah,
+  Metode,
+  Pertemuan,
+  Prodi,
+} from "./types";
 
 const DATA_AWAL: AppData = {
   dosen: [],
@@ -27,19 +37,83 @@ const TABEL = {
   pertemuan: "pertemuan",
 } as const;
 
-interface DataKonteks {
-  data: AppData;
-  siap: boolean;
-  tambah<K extends Koleksi>(koleksi: K, item: AppData[K][number]): Promise<void>;
-  ubah<K extends Koleksi>(
-    koleksi: K,
-    id: string,
-    perubahan: Partial<AppData[K][number]>,
-  ): Promise<void>;
-  hapus(koleksi: Koleksi, id: string): Promise<void>;
+type BarisDosen = Database["public"]["Tables"]["dosen"]["Row"];
+type BarisMataKuliah = Database["public"]["Tables"]["mata_kuliah"]["Row"];
+type BarisKelas = Database["public"]["Tables"]["kelas"]["Row"];
+type BarisPertemuan = Database["public"]["Tables"]["pertemuan"]["Row"];
+
+// Pemetaan baris database (snake_case) <-> tipe aplikasi (camelCase).
+function keDosen(b: BarisDosen): Dosen {
+  return { id: b.id, nama: b.nama, nidn: b.nidn, prodi: b.prodi as Prodi };
+}
+function keMataKuliah(b: BarisMataKuliah): MataKuliah {
+  return {
+    id: b.id,
+    kode: b.kode,
+    nama: b.nama,
+    sks: b.sks,
+    prodi: b.prodi as Prodi,
+  };
+}
+function keKelas(b: BarisKelas): Kelas {
+  return { id: b.id, nama: b.nama, prodi: b.prodi as Prodi };
+}
+function kePertemuan(b: BarisPertemuan): Pertemuan {
+  return {
+    id: b.id,
+    dosenId: b.dosen_id,
+    prodi: b.prodi as Prodi,
+    kelasId: b.kelas_id,
+    mataKuliahId: b.mata_kuliah_id,
+    tanggal: b.tanggal,
+    metode: b.metode as Metode,
+    sks: b.sks,
+  };
 }
 
-const DataKonteks = createContext<DataKonteks | null>(null);
+function barisKeItem(koleksi: Koleksi, baris: unknown) {
+  const b = baris as Record<string, unknown>;
+  switch (koleksi) {
+    case "dosen":
+      return keDosen(b as unknown as BarisDosen);
+    case "mataKuliah":
+      return keMataKuliah(b as unknown as BarisMataKuliah);
+    case "kelas":
+      return keKelas(b as unknown as BarisKelas);
+    case "pertemuan":
+      return kePertemuan(b as unknown as BarisPertemuan);
+  }
+}
+
+// Ubah kunci camelCase aplikasi menjadi nama kolom database.
+function keBaris(koleksi: Koleksi, nilai: Record<string, unknown>): Record<string, unknown> {
+  if (koleksi !== "pertemuan") return nilai;
+  const pasangan: Record<string, string> = {
+    dosenId: "dosen_id",
+    kelasId: "kelas_id",
+    mataKuliahId: "mata_kuliah_id",
+  };
+  const hasil: Record<string, unknown> = {};
+  for (const [kunci, isi] of Object.entries(nilai)) {
+    hasil[pasangan[kunci] ?? kunci] = isi;
+  }
+  return hasil;
+}
+
+// Klien dengan tipe longgar agar CRUD generik antar empat tabel tetap rapi.
+interface KlienLonggar {
+  insert(nilai: unknown): { select(): { single(): Promise<{ data: unknown; error: unknown }> } };
+  update(nilai: unknown): {
+    eq(kolom: string, nilai: unknown): {
+      select(): { single(): Promise<{ data: unknown; error: unknown }> };
+    };
+  };
+  delete(): { eq(kolom: string, nilai: unknown): Promise<{ error: unknown }> };
+}
+
+function klien(tabel: string): KlienLonggar {
+  return supabase.from(tabel as never) as unknown as KlienLonggar;
+}
 
 async function muatSemua(): Promise<AppData | null> {
   const [dosen, mataKuliah, kelas, pertemuan] = await Promise.all([
@@ -58,10 +132,10 @@ async function muatSemua(): Promise<AppData | null> {
     return null;
   }
   return {
-    dosen: (dosen.data ?? []) as AppData["dosen"],
-    mataKuliah: (mataKuliah.data ?? []) as AppData["mataKuliah"],
-    kelas: (kelas.data ?? []) as AppData["kelas"],
-    pertemuan: (pertemuan.data ?? []) as AppData["pertemuan"],
+    dosen: (dosen.data ?? []).map(keDosen),
+    mataKuliah: (mataKuliah.data ?? []).map(keMataKuliah),
+    kelas: (kelas.data ?? []).map(keKelas),
+    pertemuan: (pertemuan.data ?? []).map(kePertemuan),
   };
 }
 
@@ -94,24 +168,30 @@ async function imporDataLokal(): Promise<AppData | null> {
 
     for (const { id, ...nilai } of lama.dosen ?? []) {
       const hasil = await supabase.from("dosen").insert(nilai).select("id").single();
-      if (hasil.data) petaDosen.set(id, hasil.data.id as string);
+      if (hasil.data) petaDosen.set(id, hasil.data.id);
     }
     for (const { id, ...nilai } of lama.kelas ?? []) {
       const hasil = await supabase.from("kelas").insert(nilai).select("id").single();
-      if (hasil.data) petaKelas.set(id, hasil.data.id as string);
+      if (hasil.data) petaKelas.set(id, hasil.data.id);
     }
     for (const { id, ...nilai } of lama.mataKuliah ?? []) {
       const hasil = await supabase.from("mata_kuliah").insert(nilai).select("id").single();
-      if (hasil.data) petaMataKuliah.set(id, hasil.data.id as string);
+      if (hasil.data) petaMataKuliah.set(id, hasil.data.id);
     }
-    for (const { id: _id, ...nilai } of lama.pertemuan ?? []) {
-      const dosenId = petaDosen.get(nilai.dosenId);
-      const kelasId = petaKelas.get(nilai.kelasId);
-      const mataKuliahId = petaMataKuliah.get(nilai.mataKuliahId);
+    for (const p of lama.pertemuan ?? []) {
+      const dosenId = petaDosen.get(p.dosenId);
+      const kelasId = petaKelas.get(p.kelasId);
+      const mataKuliahId = petaMataKuliah.get(p.mataKuliahId);
       if (!dosenId || !kelasId || !mataKuliahId) continue;
-      await supabase
-        .from("pertemuan")
-        .insert({ ...nilai, dosenId, kelasId, mataKuliahId } as never);
+      await supabase.from("pertemuan").insert({
+        dosen_id: dosenId,
+        prodi: p.prodi,
+        kelas_id: kelasId,
+        mata_kuliah_id: mataKuliahId,
+        tanggal: p.tanggal,
+        metode: p.metode,
+        sks: p.sks,
+      });
     }
     window.localStorage.removeItem(KUNCI_LOKAL_LAMA);
     return await muatSemua();
@@ -120,6 +200,20 @@ async function imporDataLokal(): Promise<AppData | null> {
     return null;
   }
 }
+
+interface DataKonteks {
+  data: AppData;
+  siap: boolean;
+  tambah<K extends Koleksi>(koleksi: K, item: AppData[K][number]): Promise<void>;
+  ubah<K extends Koleksi>(
+    koleksi: K,
+    id: string,
+    perubahan: Partial<AppData[K][number]>,
+  ): Promise<void>;
+  hapus(koleksi: Koleksi, id: string): Promise<void>;
+}
+
+const DataKonteks = createContext<DataKonteks | null>(null);
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<AppData>(DATA_AWAL);
@@ -149,21 +243,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const tambah = async <K extends Koleksi>(koleksi: K, item: AppData[K][number]) => {
     // ID dibuat oleh database; buang id yang dikirim komponen.
-    const { id: _id, ...nilai } = item as { id: string } & Record<string, unknown>;
-    const { data: baris, error } = await supabase
-      .from(TABEL[koleksi])
-      .insert(nilai as never)
+    const { id: _id, ...nilai } = item as unknown as { id: string } & Record<string, unknown>;
+    const hasil = await klien(TABEL[koleksi])
+      .insert(keBaris(koleksi, nilai))
       .select()
       .single();
-    if (error || !baris) {
-      console.error("Gagal menyimpan data:", error);
+    if (hasil.error || !hasil.data) {
+      console.error("Gagal menyimpan data:", hasil.error);
       return;
     }
     setData(
       (sebelumnya) =>
         ({
           ...sebelumnya,
-          [koleksi]: [...sebelumnya[koleksi], baris],
+          [koleksi]: [...sebelumnya[koleksi], barisKeItem(koleksi, hasil.data)],
         }) as AppData,
     );
   };
@@ -173,14 +266,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
     id: string,
     perubahan: Partial<AppData[K][number]>,
   ) => {
-    const { data: baris, error } = await supabase
-      .from(TABEL[koleksi])
-      .update(perubahan as never)
+    const hasil = await klien(TABEL[koleksi])
+      .update(keBaris(koleksi, perubahan as unknown as Record<string, unknown>))
       .eq("id", id)
       .select()
       .single();
-    if (error || !baris) {
-      console.error("Gagal mengubah data:", error);
+    if (hasil.error || !hasil.data) {
+      console.error("Gagal mengubah data:", hasil.error);
       return;
     }
     setData(
@@ -188,14 +280,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
         ({
           ...sebelumnya,
           [koleksi]: sebelumnya[koleksi].map((item) =>
-            "id" in item && item.id === id ? baris : item,
+            "id" in item && item.id === id ? barisKeItem(koleksi, hasil.data) : item,
           ),
         }) as AppData,
     );
   };
 
   const hapus = async (koleksi: Koleksi, id: string) => {
-    const { error } = await supabase.from(TABEL[koleksi]).delete().eq("id", id);
+    const { error } = await klien(TABEL[koleksi]).delete().eq("id", id);
     if (error) {
       console.error("Gagal menghapus data:", error);
       return;
