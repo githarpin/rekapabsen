@@ -12,7 +12,7 @@
 # Project rules
 
 - All UI copy is in Indonesian (application name: "Sistem Rekap Mengajar Dosen Fakultas Vokasi Institut Az Zuhra").
-- App data lives in `src/lib/store.tsx` (React context persisted to browser localStorage) because no backend is connected yet. When adding a backend, swap the provider's internals while keeping the `useAppData` API; never claim data is permanently saved until then.
+- App data lives in Lovable Cloud (tables `dosen`, `mata_kuliah`, `kelas`, `pertemuan`) accessed through the React context in `src/lib/store.tsx`; keep the `useAppData` API stable when touching that file. Tables are shared and anon-accessible by user request (no login yet); adding login later means revisiting the RLS policies.
 - Phase 1 scope only: no honor/payroll system, no Excel import, no audit log, no approval workflow, no charts, and no permanent dummy/seed data unless the user asks.
 - Rekap print output must keep the black table borders and dark-purple header via tokens (`border-foreground`, `bg-primary`) and the print CSS in `src/styles.css`; the document title is "Rekap Absensi Dosen".
 - Do not add new libraries; the existing shadcn/ui components cover the UI needs.

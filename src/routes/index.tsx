@@ -110,10 +110,9 @@ function DashboardPage() {
 
       <Card className="mt-6">
         <CardContent className="p-5 text-sm leading-relaxed text-muted-foreground">
-          <span className="font-medium text-foreground">Catatan penyimpanan:</span> saat ini data
-          aplikasi tersimpan di browser perangkat ini dan belum terhubung ke basis data server,
-          sehingga belum tersimpan secara permanen dan hanya tersedia di perangkat yang sama.
-          Integrasi backend akan ditambahkan pada tahap berikutnya.
+          <span className="font-medium text-foreground">Penyimpanan:</span> data tersimpan
+          permanen di Lovable Cloud, sehingga bisa diakses dari perangkat mana pun yang membuka
+          aplikasi ini. Pertukaran data antar pengguna terjadi saat halaman dimuat ulang.
         </CardContent>
       </Card>
     </PageShell>
