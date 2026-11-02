@@ -1,4 +1,6 @@
 // Helper gateway AI Lovable — hanya boleh dipakai dari kode sisi server.
+import { createOpenAI } from "@ai-sdk/openai";
+
 
 const LOVABLE_AIG_RUN_ID_HEADER = "X-Lovable-AIG-Run-ID";
 
@@ -45,8 +47,7 @@ export function createLovableAiGatewayRunIdFetch(initialRunId?: string) {
 
 // Pemanggil AI per-request; kunci API dibaca dari environment server.
 export function createAiProvider() {
-  const { createOpenAI } = require("@ai-sdk/openai") as typeof import("@ai-sdk/openai");
-  const apiKey = process.env.LOVABLE_API_KEY;
+  const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) {
     throw new Error("Kunci AI belum tersedia di server.");
   }
