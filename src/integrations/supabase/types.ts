@@ -90,6 +90,7 @@ export type Database = {
         Row: {
           created_at: string
           dosen_id: string
+          foto_url: string | null
           id: string
           kelas_id: string
           mata_kuliah_id: string
@@ -101,6 +102,7 @@ export type Database = {
         Insert: {
           created_at?: string
           dosen_id: string
+          foto_url?: string | null
           id?: string
           kelas_id: string
           mata_kuliah_id: string
@@ -112,6 +114,7 @@ export type Database = {
         Update: {
           created_at?: string
           dosen_id?: string
+          foto_url?: string | null
           id?: string
           kelas_id?: string
           mata_kuliah_id?: string
