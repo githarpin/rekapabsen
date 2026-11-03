@@ -55,6 +55,7 @@ export interface Pertemuan {
   tanggal: string; // format YYYY-MM-DD
   metode: Metode;
   sks: number;
+  fotoUrl: string | null; // path objek di bucket foto-absensi
 }
 
 export interface AppData {
