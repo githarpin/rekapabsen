@@ -68,6 +68,7 @@ function kePertemuan(b: BarisPertemuan): Pertemuan {
     tanggal: b.tanggal,
     metode: b.metode as Metode,
     sks: b.sks,
+    fotoUrl: b.foto_url ?? null,
   };
 }
 
@@ -92,6 +93,7 @@ function keBaris(koleksi: Koleksi, nilai: Record<string, unknown>): Record<strin
     dosenId: "dosen_id",
     kelasId: "kelas_id",
     mataKuliahId: "mata_kuliah_id",
+    fotoUrl: "foto_url",
   };
   const hasil: Record<string, unknown> = {};
   for (const [kunci, isi] of Object.entries(nilai)) {
