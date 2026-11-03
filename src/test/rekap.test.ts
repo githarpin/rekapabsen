@@ -17,10 +17,10 @@ const data: AppData = {
     { id: "k2", nama: "TK-2A", prodi: "D3 Teknik Komputer" },
   ],
   pertemuan: [
-    { id: "p1", dosenId: "d1", prodi: "D3 Manajemen Informatika", kelasId: "k1", mataKuliahId: "m1", tanggal: "2026-10-05", metode: "Teori", sks: 3 },
-    { id: "p2", dosenId: "d1", prodi: "D3 Manajemen Informatika", kelasId: "k1", mataKuliahId: "m1", tanggal: "2026-10-12", metode: "Praktik", sks: 2 },
-    { id: "p3", dosenId: "d2", prodi: "D3 Teknik Komputer", kelasId: "k2", mataKuliahId: "m2", tanggal: "2026-09-20", metode: "Teori", sks: 2 },
-    { id: "p4", dosenId: "d2", prodi: "D3 Teknik Komputer", kelasId: "k2", mataKuliahId: "m2", tanggal: "2026-11-01", metode: "Praktik", sks: 3 },
+    { id: "p1", dosenId: "d1", prodi: "D3 Manajemen Informatika", kelasId: "k1", mataKuliahId: "m1", tanggal: "2026-10-05", metode: "Teori", sks: 3, fotoUrl: null },
+    { id: "p2", dosenId: "d1", prodi: "D3 Manajemen Informatika", kelasId: "k1", mataKuliahId: "m1", tanggal: "2026-10-12", metode: "Praktik", sks: 2, fotoUrl: null },
+    { id: "p3", dosenId: "d2", prodi: "D3 Teknik Komputer", kelasId: "k2", mataKuliahId: "m2", tanggal: "2026-09-20", metode: "Teori", sks: 2, fotoUrl: null },
+    { id: "p4", dosenId: "d2", prodi: "D3 Teknik Komputer", kelasId: "k2", mataKuliahId: "m2", tanggal: "2026-11-01", metode: "Praktik", sks: 3, fotoUrl: null },
   ],
 };
 
