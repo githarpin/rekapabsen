@@ -545,34 +545,4 @@ function InputMengajarPage() {
       </Card>
     </PageShell>
   );
-
-  function tambahHapusPertemuan(id: string) {
-    // dipanggil setelah konfirmasi hapus
-    void hapusPertemuan(id);
-  }
-
-  async function hapusPertemuan(id: string) {
-    await hapus("pertemuan", id);
-  }
-
-  // hapus dari konteks
-  function hapusRef() {
-    return hapus;
-  }
-
-  function hapus(...args: Parameters<ReturnType<typeof useAppData>["hapus"]>) {
-    return hapusKonteks(...args);
-  }
-
-  const hapusKonteks = hapusDariKonteks;
-  function hapusDariKonteks(
-    koleksi: Parameters<ReturnType<typeof useAppData>["hapus"]>[0],
-    id: string,
-  ) {
-    return hapusFn(koleksi, id);
-  }
-
-  const hapusFn = useAppData().hapus;
 }
-
-// Kembalikan foto absensi bersama pertemuan; foto ikut terhapus bersama barisnya.
