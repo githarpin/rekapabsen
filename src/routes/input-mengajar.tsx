@@ -82,7 +82,7 @@ function FotoAbsensiThumb({ path }: { path: string }) {
 }
 
 function InputMengajarPage() {
-  const { data, tambah } = useAppData();
+  const { data, tambah, hapus } = useAppData();
   const bacaFotoFn = useServerFn(bacaFotoAbsensi);
 
   const [dosenId, setDosenId] = useState("");
@@ -526,8 +526,10 @@ function InputMengajarPage() {
                         aria-label="Hapus pertemuan"
                         onClick={() => {
                           if (window.confirm("Hapus pertemuan ini?")) {
-                            void supabase.storage.from("foto-absensi").remove([pertemuan.fotoUrl]);
-                            tambahHapusPertemuan(pertemuan.id);
+                            if (pertemuan.fotoUrl) {
+                              void supabase.storage.from("foto-absensi").remove([pertemuan.fotoUrl]);
+                            }
+                            void hapus("pertemuan", pertemuan.id);
                           }
                         }}
                       >
